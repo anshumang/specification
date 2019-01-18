@@ -55,11 +55,15 @@ CALL @\FuncDecl{SHMEM\_WAIT\_UNTIL}@(ivar, cmp, cmp_value)
     the value contained in the symmetric data object, \VAR{ivar}, at the
     calling \ac{PE} satisfies the wait condition.  In an \openshmem program
     with single-threaded \acp{PE}, the \VAR{ivar} object at the calling \ac{PE}
-    may be updated by an \ac{RMA}, \ac{AMO}, or store operation performed by another
+    may be updated by \FUNC{shmem\_signal}, \ac{AMO} or \FUNC{shmem\_put\_signal} operation performed by another
     \ac{PE}.  In an \openshmem program with multithreaded \acp{PE}, the
-    \VAR{ivar} object at the calling \ac{PE} may be updated by an \ac{RMA}, \ac{AMO}, or
-    store operation performed by a thread located within the calling \ac{PE} or
+    \VAR{ivar} object at the calling \ac{PE} may be updated by a \FUNC{shmem\_signal}, \ac{AMO} or
+    \FUNC{shmem\_put\_signal} operation performed by a thread located within the calling \ac{PE} or
     within another \ac{PE}.
+
+    \FUNC{shmem\_wait} and \FUNC{shmem\_wait\_until} should observe the update
+    of the memory atomically when the update is done by \FUNC{shmem\_signal}, \ac{AMO} 
+    or \FUNC{shmem\_put\_signal} operation.
 
     These routines can be used to implement point-to-point synchronization
     between \acp{PE} or between threads within the same \ac{PE}.  A call to
@@ -88,13 +92,6 @@ CALL @\FuncDecl{SHMEM\_WAIT\_UNTIL}@(ivar, cmp, cmp_value)
   As of \openshmem[1.4], the \FUNC{shmem\_wait} routine is deprecated;
   however, \FUNC{shmem\_wait} is equivalent to \FUNC{shmem\_wait\_until}
   where \VAR{cmp} is \CONST{SHMEM\_CMP\_NE}.
-}
-
-\apiimpnotes{
-    Implementations must ensure that \FUNC{shmem\_wait} and
-    \FUNC{shmem\_wait\_until} do not return before the update of the memory
-    indicated by \VAR{ivar} is fully complete.  Partial updates to the memory
-    must not cause \FUNC{shmem\_wait} or \FUNC{shmem\_wait\_until} to return.
 }
 
 
