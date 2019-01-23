@@ -1,0 +1,66 @@
+\apisummary{
+    Atomically set the value of a symmetric data object. The atomic update of the symmetric data object is only atomic with respect to \FUNC{shmem\_signal}, \FUNC{shmem\_put\_signal}, \FUNC{shmem\_wait}, \FUNC{shmem\_wait\_until} and \FUNC{shmem\_test} but not with respect to \ac{AMO} operations. 
+}
+
+\begin{apidefinition}
+
+\begin{C11synopsis}
+void @\FuncDecl{shmem\_signal}@(TYPE *dest, TYPE value, int pe);
+void @\FuncDecl{shmem\_signal}@(shmem_ctx_t ctx, TYPE *dest, TYPE value, int pe);
+\end{C11synopsis}
+where \TYPE{} is one of the point-to-point synchronization types and has a corresponding \TYPENAME{} specified by
+Table~\ref{p2psynctypes}.
+
+\begin{Csynopsis}
+void @\FuncDecl{shmem\_\FuncParam{TYPENAME}\_signal}@(TYPE *dest, TYPE value, int pe);
+void @\FuncDecl{shmem\_ctx\_\FuncParam{TYPENAME}\_signal}@(shmem_ctx_t ctx, TYPE *dest, TYPE value, int pe);
+\end{Csynopsis}
+where \TYPE{} is one of \{\CTYPE{short}, \CTYPE{int}, \CTYPE{long},
+\CTYPE{long long}\} and has a corresponding \TYPENAME{} specified by
+Table~\ref{p2psynctypes}.
+
+\begin{Fsynopsis}
+INTEGER pe
+INTEGER*4 SHMEM_INT4_SIGNAL, value_i4
+CALL @\FuncDecl{SHMEM\_INT4\_SIGNAL}@(dest, value_i4, pe)
+INTEGER*8 SHMEM_INT8_SIGNAL, value_i8
+CALL @\FuncDecl{SHMEM\_INT8\_SIGNAL}@(dest, value_i8, pe)
+\end{Fsynopsis}
+
+\begin{apiarguments}
+
+\apiargument{IN}{ctx}{A context handle specifying the context on which to perform the operation.
+    When this argument is not provided, the operation is performed on
+    the default context.}
+\apiargument{OUT}{dest}{The remotely accessible data object to be set on
+    the remote \ac{PE}.}
+\apiargument{IN}{value}{The value to be atomically written to the remote \ac{PE}.}
+\apiargument{IN}{pe}{An integer that indicates the \ac{PE} number on which
+    \VAR{dest} is to be updated.}
+
+\end{apiarguments}
+
+\apidescription{
+    These routines provide a lower latency pt-to-pt synchronization capability compared
+    to \ac{AMO} operations.
+    \FUNC{shmem\_signal} writes the \VAR{value} into \VAR{dest} on \VAR{pe} as an 
+    atomic operation.
+    The atomic set operation by \FUNC{shmem\_signal} is atomic with respect 
+    to itself, \FUNC{shmem\_put\_signal}, \FUNC{shmem\_wait}, \FUNC{shmem\_wait\_until} 
+    and \FUNC{shmem\_test}. However, it is not atomic with respect to \ac{AMO} operations.
+    If the context handle \VAR{ctx} does not correspond to a valid context,
+    the behavior is undefined.
+    Unlike \ac{RMA} and \ac{AMO} operations, these routines return only when the data 
+    is delivered to the remote \ac{PE}. \FUNC{shmem\_quiet} is not required to complete
+    \FUNC{shmem\_signal} transfers.
+}
+
+\apireturnvalues{
+    None.
+}
+
+\apinotes{
+    None.
+}
+
+\end{apidefinition}
